@@ -19,6 +19,7 @@ class NewsImage extends StatelessWidget {
       url,
       fit: BoxFit.cover,
       width: double.infinity,
+      webHtmlElementStrategy: WebHtmlElementStrategy.prefer,
       loadingBuilder: (context, child, progress) {
         if (progress == null) return child;
         return Container(

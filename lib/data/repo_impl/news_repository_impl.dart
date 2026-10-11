@@ -8,8 +8,8 @@ class NewsRepositoryImpl implements NewsRepository {
   final NewsDataSource dataSource;
 
   @override
-  Future<List<NewsArticleEntity>> getEverythingArticles(String query) async {
-    final models = await dataSource.getEverything(query);
+  Future<List<NewsArticleEntity>> getEverythingArticles() async {
+    final models = await dataSource.getEverything();
     return models.map((e) => e.fromModelToEntity()).toList();
   }
 }

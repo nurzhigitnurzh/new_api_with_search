@@ -14,7 +14,7 @@ class NewsDataSourceImpl implements NewsDataSource {
   final Dio dio;
 
   @override
-  Future<List<NewsArticleModel>> getEverything(String query) async {
+  Future<List<NewsArticleModel>> getEverything() async {
     try {
       final response = await dio.get(_ApiPath.everything);
       return NewsArticleModel.fromJsonList(response.data['articles']);

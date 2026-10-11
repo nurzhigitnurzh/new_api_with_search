@@ -14,33 +14,14 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) => NewsBloc(repository: context.read<NewsRepository>())
-        ..add(const GetNewsEvent('tesla')),
+        ..add(const GetNewsEvent()),
       child: const _HomeView(),
     );
   }
 }
 
-class _HomeView extends StatefulWidget {
+class _HomeView extends StatelessWidget {
   const _HomeView();
-
-  @override
-  State<_HomeView> createState() => _HomeViewState();
-}
-
-class _HomeViewState extends State<_HomeView> {
-  final _controller = TextEditingController();
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  void _search() {
-    final text = _controller.text.trim();
-    FocusScope.of(context).unfocus();
-    context.read<NewsBloc>().add(GetNewsEvent(text.isEmpty ? 'tesla' : text));
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,9 +34,6 @@ class _HomeViewState extends State<_HomeView> {
             children: [
               const SizedBox(height: 16),
               TextField(
-                controller: _controller,
-                textInputAction: TextInputAction.search,
-                onSubmitted: (_) => _search(),
                 decoration: InputDecoration(
                   hintText: 'Search here...',
                   hintStyle: const TextStyle(fontSize: 13, color: Colors.grey),
@@ -66,10 +44,7 @@ class _HomeViewState extends State<_HomeView> {
                     horizontal: 20,
                     vertical: 12,
                   ),
-                  suffixIcon: IconButton(
-                    icon: const Icon(Icons.search, size: 20),
-                    onPressed: _search,
-                  ),
+                  suffixIcon: const Icon(Icons.search, size: 20),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(30),
                     borderSide: BorderSide.none,
@@ -95,7 +70,9 @@ class _HomeViewState extends State<_HomeView> {
                               Text(message, textAlign: TextAlign.center),
                               const SizedBox(height: 12),
                               ElevatedButton(
-                                onPressed: _search,
+                                onPressed: () => context
+                                    .read<NewsBloc>()
+                                    .add(const GetNewsEvent()),
                                 child: const Text('Retry'),
                               ),
                             ],

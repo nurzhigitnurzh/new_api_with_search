@@ -14,7 +14,7 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
     emit(const NewsLoading());
 
     try {
-      final articles = await repository.getEverythingArticles(event.query);
+      final articles = await repository.getEverythingArticles();
       emit(NewsLoaded(articles));
     } catch (e) {
       emit(NewsError(e.toString().replaceFirst('Exception: ', '')));
