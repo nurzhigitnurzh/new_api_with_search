@@ -1,8 +1,10 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:injectable/injectable.dart';
 import 'package:home1/domain/repo/news_repository.dart';
 import 'package:home1/ui/bloc/news_event.dart';
 import 'package:home1/ui/bloc/news_state.dart';
 
+@injectable
 class NewsBloc extends Bloc<NewsEvent, NewsState> {
   NewsBloc({required this.repository}) : super(const NewsInitial()) {
     on<GetNewsEvent>(_onGetNews);
@@ -14,7 +16,7 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
     emit(const NewsLoading());
 
     try {
-      final articles = await repository.getEverythingArticles();
+      final articles = await repository.getEverythingArticles(event.query);
       emit(NewsLoaded(articles));
     } catch (e) {
       emit(NewsError(e.toString().replaceFirst('Exception: ', '')));

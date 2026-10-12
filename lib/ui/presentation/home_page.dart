@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:home1/domain/repo/news_repository.dart';
+import 'package:home1/core/di/injection.dart';
 import 'package:home1/ui/bloc/news_bloc.dart';
 import 'package:home1/ui/bloc/news_event.dart';
 import 'package:home1/ui/bloc/news_state.dart';
@@ -13,15 +13,36 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => NewsBloc(repository: context.read<NewsRepository>())
-        ..add(const GetNewsEvent()),
+      create: (_) => getIt<NewsBloc>()..add(const GetNewsEvent('tesla')),
       child: const _HomeView(),
     );
   }
 }
 
-class _HomeView extends StatelessWidget {
+class _HomeView extends StatefulWidget {
   const _HomeView();
+
+  @override
+  State<_HomeView> createState() => _HomeViewState();
+}
+
+class _HomeViewState extends State<_HomeView> {
+  final _controller = TextEditingController();
+  String _query = 'tesla';
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _search() {
+    final text = _controller.text.trim();
+    if (text.isEmpty) return;
+    FocusScope.of(context).unfocus();
+    setState(() => _query = text);
+    context.read<NewsBloc>().add(GetNewsEvent(text));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,6 +55,7 @@ class _HomeView extends StatelessWidget {
             children: [
               const SizedBox(height: 16),
               TextField(
+                controller: _controller,
                 decoration: InputDecoration(
                   hintText: 'Search here...',
                   hintStyle: const TextStyle(fontSize: 13, color: Colors.grey),
@@ -44,7 +66,10 @@ class _HomeView extends StatelessWidget {
                     horizontal: 20,
                     vertical: 12,
                   ),
-                  suffixIcon: const Icon(Icons.search, size: 20),
+                  suffixIcon: IconButton(
+                    icon: const Icon(Icons.search, size: 20),
+                    onPressed: _search,
+                  ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(30),
                     borderSide: BorderSide.none,
@@ -53,7 +78,7 @@ class _HomeView extends StatelessWidget {
               ),
               const SizedBox(height: 24),
               const Text(
-                'Tesla news',
+                'News',
                 style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800),
               ),
               const SizedBox(height: 16),
@@ -72,7 +97,7 @@ class _HomeView extends StatelessWidget {
                               ElevatedButton(
                                 onPressed: () => context
                                     .read<NewsBloc>()
-                                    .add(const GetNewsEvent()),
+                                    .add(GetNewsEvent(_query)),
                                 child: const Text('Retry'),
                               ),
                             ],
